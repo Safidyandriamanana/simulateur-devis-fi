@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulateur prix montage vidéo - Please, call me Fi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin:0; box-sizing:border-box; font-family:system-ui,-apple-system,sans-serif; }
+        /* Styles pour l'effet "glass" du simulateur */
+        .glass { backdrop-filter:blur(18px); background:rgba(15,23,42,0.94); }
+        .focus-ring:focus-visible { outline:2px solid #8b5cf6; outline-offset:2px; }
+        .radio-hidden { appearance:none; width:0; height:0; position:absolute; opacity:0; }
+        
+        /* Ajout du style pour le bouton sélectionné */
+        button[data-pack="simple"][data-selected="true"] { border-color: theme('colors.sky.500'); border-width: 2px; }
+        button[data-pack="standard"][data-selected="true"] { border-color: theme('colors.emerald.500'); border-width: 2px; }
+        button[data-pack="premium"][data-selected="true"] { border-color: theme('colors.violet.500'); border-width: 2px; }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-slate-50 p-4 sm:p-8">
+
+<main class="max-w-5xl mx-auto space-y-10">
+
+    <section class="space-y-2 text-center">
+        <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-violet-300 to-emerald-300 bg-clip-text text-transparent">
+            Simulateur de prix montage vidéo
+        </h1>
+        <p class="text-sm text-slate-300">
+            Estimation indicative de mes tarifs TTC selon le forfait, la durée, le nombre de vidéos, l’engagement,
+            la cession publicitaire et l’éventuelle urgence.
+        </p>
+    </section>
+
+    <section class="glass rounded-3xl p-6 sm:p-8 border border-slate-700/60 space-y-6">
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button type="button" onclick="selectPack('simple')" data-pack="simple" data-selected="true"
+                    class="glass rounded-2xl p-4 border-2 border-slate-700/60 hover:border-sky-300/80 text-left space-y-2 transition-all duration-200">
+                <p class="text-xs font-semibold text-slate-400">01</p>
+                <h2 class="text-lg font-bold text-sky-300">Forfait SIMPLE (Basique)</h2>
+                <p class="text-xs text-slate-300">
+                    Pour une vidéo claire, pro et sans superflu : coupe propre, rythme fluide, prête à être publiée rapidement.
+                </p>
+                <p class="text-[11px] text-sky-200 mt-1">
+                    À partir de 75 € TTC (vidéo courte)
+                </p>
+                <input id="radio-simple" type="radio" name="pack" value="simple" class="radio-hidden" checked>
+            </button>
+
+            <button type="button" onclick="selectPack('standard')" data-pack="standard" data-selected="false"
+                    class="glass rounded-2xl p-4 border-2 border-slate-700/60 hover:border-emerald-300/80 text-left space-y-2 transition-all duration-200">
+                <p class="text-xs font-semibold text-slate-400">02</p>
+                <h2 class="text-lg font-bold text-emerald-300">Forfait STANDARD (Optimisé)</h2>
+                <p class="text-xs text-slate-300">
+                    Le pack parfait pour une vidéo claire, pro et optimisée : rythme travaillé, audio mixé et éléments clés soignés.
+                </p>
+                <p class="text-[11px] text-emerald-200 mt-1">
+                    À partir de 132 € TTC (vidéo courte, inclut 10% de cession organique)
+                </p>
+                <input id="radio-standard" type="radio" name="pack" value="standard" class="radio-hidden">
+            </button>
+
+            <button type="button" onclick="selectPack('premium')" data-pack="premium" data-selected="false"
+                    class="glass rounded-2xl p-4 border-2 border-slate-700/60 hover:border-violet-300/80 text-left space-y-2 transition-all duration-200">
+                <p class="text-xs font-semibold text-slate-400">03</p>
+                <h2 class="text-lg font-bold text-violet-300">Forfait PREMIUM (Avancé & Créatif)</h2>
+                <p class="text-xs text-slate-300">
+                    Pour des vidéos dynamiques et immersives, avec effets visuels et sonores pour un rendu pro sur YouTube et les réseaux.
+                </p>
+                <p class="text-[11px] text-violet-200 mt-1">
+                    À partir de 180 € TTC (vidéo courte, cession organique offerte)
+                </p>
+                <input id="radio-premium" type="radio" name="pack" value="premium" class="radio-hidden">
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs text-slate-300">Durée de la vidéo</label>
+                    <select id="select-duree"
+                            class="focus-ring bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs">
+                        <option value="courte">Vidéo COURTE (moins de 2 min)</option>
+                        <option value="moyenne">Vidéo MOYENNE (moins de 15 min)</option>
+                        <option value="longue">Vidéo LONGUE (moins de 30 min)</option>
+                        <option value="xl">Vidéo XL (plus de 30 min)</option>
+                    </select>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs text-slate-300">Nombre de vidéos (par mois)</label>
+                    <select id="select-volume"
+                            class="focus-ring bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs">
+                        </select>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs text-slate-300">Engagement</label>
+                    <select id="select-engagement"
+                            class="focus-ring bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs">
+                        <option value="none">Sans engagement</option>
+                        <option value="6mois">Engagement 6 mois (-5 %)</option>
+                        <option value="12mois">Engagement 12 mois (-10 %)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <div>
+                    <p class="text-xs text-slate-300 font-medium">Cession des droits</p>
+                    <p class="text-[11px] text-slate-400">
+                        Usage organique inclus. Usage publicitaire : **+20 %** du prix des prestations.
+                    </p>
+                    <label class="flex items-center gap-2 text-[11px] text-slate-200 cursor-pointer mt-1">
+                        <input type="checkbox" id="option-ads" class="w-4 h-4 rounded border-slate-600">
+                        <span>Ajouter la cession publicitaire (**+20 %**)</span>
+                    </label>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-300 font-medium">Urgence</p>
+                    <label class="flex items-center gap-2 text-[11px] text-slate-200 cursor-pointer mt-1">
+                        <input type="checkbox" id="option-urgent" class="w-4 h-4 rounded border-slate-600">
+                        <span>Urgence (délai ≈ moitié du délai standard) : +30 %</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+            <div class="text-xs text-slate-300 space-y-2">
+                <p id="recap-description">
+                    Forfait SIMPLE • Vidéo courte • 1 vidéo • sans engagement.
+                </p>
+                <p id="recap-delai" class="text-[11px] text-slate-400">
+                    Délai indicatif : 3 jour(s) ouvré(s) (standard).
+                </p>
+                <ul class="list-disc list-inside text-[11px] space-y-1 text-slate-400">
+                    <li>Tarifs indiqués ici en TTC (TVA de 20 % appliquée).</li>
+                    <li>Remise volume : -5 % à partir de 6 vidéos sur un mois.</li>
+                    <li>Engagement 6 mois : -5 % par vidéo (minimum 3 vidéos/mois). Engagement 12 mois : -10 % par vidéo (minimum 3 vidéos/mois).</li>
+                    <li>Cession organique incluse. Cession publicitaire : +20 %. Urgence : +30 % si le délai est réduit à environ la moitié du standard.</li>
+                </ul>
+            </div>
+            <div class="glass rounded-2xl p-4 border border-slate-700/80 space-y-2">
+                <p class="text-xs text-slate-400" id="recap-title">Estimation totale (sans engagement)</p>
+                <p id="recap-total" class="text-2xl font-bold text-violet-300">75 € TTC</p>
+                <p id="recap-breakdown" class="text-[11px] text-slate-400">
+                    Prestations : 75 € • Cession ads : 0 € • Urgence : 0 € TTC.
+                </p>
+                <p id="recap-unit" class="text-[11px] text-slate-400">
+                    Base : 62 € HT / 75 € TTC par vidéo. Prix unitaire moyen (hors options, avec remises) : 75 € TTC.
+                </p>
+                <p id="recap-remises" class="text-[11px] text-slate-400">
+                    Remise volume : 0 % • Remise engagement : 0 %.
+                </p>
+                <p id="recap-total-engagement"
+                   class="text-[11px] text-slate-400 pt-1 border-t border-slate-700/60 mt-2"
+                   style="display:none;"></p>
+            </div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-700/60">
+            <form name="devis-simulation" method="POST" data-netlify="true" netlify-honeypot="bot-field"
+                class="mt-8 p-6 bg-slate-900 rounded-xl border border-violet-500/50 space-y-4">
+                
+                <h3 class="text-xl font-bold text-violet-300">📧 Recevez ce devis par email</h3>
+                <p class="text-sm text-slate-400">Remplissez ces champs et nous vous enverrons le récapitulatif de votre simulation.</p>
+
+                <p class="hidden">
+                    <label>Ne pas remplir ce champ : <input name="bot-field" /></label>
+                </p>
+
+                <input type="hidden" name="Forfait_Choisi" id="form-pack-input" value="SIMPLE">
+                <input type="hidden" name="Prix_TTC_Final" id="form-price-input" value="75 € TTC">
+                <input type="hidden" name="Recap_Detaille" id="form-recap-input" value="">
+
+                <input type="text" name="Nom" placeholder="Votre Nom / Nom de l'entreprise" required 
+                       class="w-full p-3 bg-slate-950 border border-slate-700 rounded text-sm focus-ring">
+                <input type="email" name="Email" placeholder="Votre Email professionnel" required 
+                       class="w-full p-3 bg-slate-950 border border-slate-700 rounded text-sm focus-ring">
+                
+                <button type="submit" 
+                        class="w-full bg-violet-600 hover:bg-violet-700 font-semibold py-3 rounded-lg transition-colors focus-ring">
+                    Envoyer et recevoir le devis complet
+                </button>
+            </form>
+        </div>
+
+    </section>
+    
+    <section class="bg-slate-50 text-slate-900 rounded-3xl shadow-lg overflow-hidden">
+        <div class="grid grid-cols-4 border-b border-slate-200">
+            <div class="px-4 py-4 bg-slate-100">
+                <h3 class="text-sm font-semibold text-slate-700">Caractéristique de montage</h3>
+            </div>
+            <div class="px-4 py-4 text-center">
+                <p class="text-xs font-semibold text-slate-500">01</p>
+                <p class="text-base font-bold text-sky-600">SIMPLE</p>
+            </div>
+            <div class="px-4 py-4 text-center border-l border-slate-200">
+                <p class="text-xs font-semibold text-slate-500">02</p>
+                <p class="text-base font-bold text-emerald-600">STANDARD</p>
+            </div>
+            <div class="px-4 py-4 text-center border-l border-slate-200">
+                <p class="text-xs font-semibold text-slate-500">03</p>
+                <p class="text-base font-bold text-violet-600">PREMIUM</p>
+            </div>
+        </div>
+
+        <div class="divide-y divide-slate-200 text-sm">
+            <div class="grid grid-cols-4">
+                <div class="px-4 py-3 bg-slate-50"><p class="font-semibold text-slate-800">Coupe & rythme</p></div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600">Derush simple, élimination des silences/erreurs.</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Montage dynamique, travail du rythme selon le format.</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Montage très dynamique, travail précis du flow et de l’intention.</div>
+            </div>
+
+            <div class="grid grid-cols-4">
+                <div class="px-4 py-3 bg-slate-50"><p class="font-semibold text-slate-800">Nettoyage audio</p></div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600">Inclus (élimination des bruits légers et silences).</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Inclus (réduction de bruit avancée et mixage).</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Inclus (mixage professionnel, compression, mastering).</div>
+            </div>
+
+            <div class="grid grid-cols-4">
+                <div class="px-4 py-3 bg-slate-50"><p class="font-semibold text-slate-800">Bande sonore (BGM)</p></div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600">Exclu (fournie par le client).</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Inclus (recherche de musiques libres de droits).</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Inclus (recherche pointue et intégration d’effets sonores).</div>
+            </div>
+
+            <div class="grid grid-cols-4">
+                <div class="px-4 py-3 bg-slate-50"><p class="font-semibold text-slate-800">Usage organique</p></div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600">Inclus</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Inclus</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Inclus (Offert)</div>
+            </div>
+
+            <div class="grid grid-cols-4">
+                <div class="px-4 py-3 bg-slate-50"><p class="font-semibold text-slate-800">Usage publicitaire</p></div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600">+20 %</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">+20 %</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">+20 %</div>
+            </div>
+
+            <div class="grid grid-cols-4">
+                <div class="px-4 py-3 bg-slate-50"><p class="font-semibold text-slate-800">Habillage / branding</p></div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600">Intégration d’intro/outro/logos fournis par le client.</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Intégration et animation des logos/CTAs fournis.</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Gestion complète de la charte graphique (titrages, tiers inférieurs, etc.).</div>
+            </div>
+
+            <div class="grid grid-cols-4">
+                <div class="px-4 py-3 bg-slate-50"><p class="font-semibold text-slate-800">Sous-titres</p></div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600">Exclu.</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Inclus (sous-titrage simple burned-in ou fichier SRT).</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Inclus (sous-titres stylisés et animés).</div>
+            </div>
+
+            <div class="grid grid-cols-4">
+                <div class="px-4 py-3 bg-slate-50"><p class="font-semibold text-slate-800">Étalonnage</p></div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600">Correction de base (luminosité/contraste).</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Color correction pour uniformiser.</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Color grading avancé pour un rendu haut de gamme.</div>
+            </div>
+
+            <div class="grid grid-cols-4">
+                <div class="px-4 py-3 bg-slate-50"><p class="font-semibold text-slate-800">Gestion multicam</p></div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600">Exclu.</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Exclu.</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Inclus (montage et synchronisation de plusieurs angles).</div>
+            </div>
+
+            <div class="grid grid-cols-4">
+                <div class="px-4 py-3 bg-slate-50"><p class="font-semibold text-slate-800">Motion design léger</p></div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600">Exclu.</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Exclu.</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">Inclus (animations de textes et graphiques simples).</div>
+            </div>
+
+            <div class="grid grid-cols-4">
+                <div class="px-4 py-3 bg-slate-50"><p class="font-semibold text-slate-800">Révisions incluses</p></div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600">1 aller-retour.</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">2 allers-retours.</div>
+                <div class="px-4 py-3 bg-slate-50 text-xs text-slate-600 border-l border-slate-200">3 allers-retours.</div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    // --- VARIABLES GLOBALES ---
+    const TVA_RATE = 1.20; // Taux de TVA (20 % en France)
+
+    // Grille de prix HT par forfait et durée
+    const priceTableHT = {
+        simple:   { courte: 62.50, moyenne: 150.00, longue: 250.00, xl: 375.00 },
+        standard: { courte: 110.00, moyenne: 320.83, longue: 595.83, xl: 779.17 }, 
+        premium:  { courte: 150.00, moyenne: 458.33, longue: 916.67, xl: null }
+    };
+
+    const delayTable = {
+        courte:  3, moyenne: 5, longue:  7, xl: 10
+    };
+
+    const CESSION_ADS_RATE = 0.20; 
+    
+    // NOUVELLE VARIABLE GLOBALE pour stocker le récapitulatif à télécharger
+    let lastRecapText = ""; 
+
+    // --- FONCTIONS UTILITAIRES ---
+
+    function getSelectedPack() {
+        if (document.getElementById('radio-standard').checked) return 'standard';
+        if (document.getElementById('radio-premium').checked) return 'premium';
+        return 'simple';
+    }
+
+    function getDureeLabel(key) {
+        if (key === 'courte')  return 'Vidéo courte (moins de 2 min)';
+        if (key === 'moyenne') return 'Vidéo moyenne (moins de 15 min)';
+        if (key === 'longue')  return 'Vidéo longue (moins de 30 min)';
+        return 'Vidéo XL (plus de 30 min)';
+    }
+
+    function calcVolumeDiscount(volume) {
+        return volume >= 6 ? 0.05 : 0;
+    }
+
+    function calcEngagementDiscount(engagement) {
+        if (engagement === '6mois')  return 0.05;
+        if (engagement === '12mois') return 0.10;
+        return 0;
+    }
+
+    function getEngagementDuration(engagement) {
+        if (engagement === '6mois')  return 6;
+        if (engagement === '12mois') return 12;
+        return 0;
+    }
+
+    function formatCurrency(amount) {
+        // Utilise Math.round pour l'affichage des TTC
+        return Math.round(amount).toLocaleString('fr-FR', { maximumFractionDigits: 0 });
+    }
+
+    // Génère les options de volume selon l'engagement
+    function refreshVolumeOptions() {
+        const engagement = document.getElementById('select-engagement').value;
+        const select = document.getElementById('select-volume');
+        const current = Number(select.value) || 1;
+
+        let options = [];
+
+        if (engagement === 'none') {
+            options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        } else {
+            // Engagement 6 et 12 mois requièrent un minimum de 3 vidéos/mois
+            options = [3, 4, 5, 6, 7, 8, 9, 10]; 
+        }
+
+        select.innerHTML = '';
+        options.forEach(v => {
+            const opt = document.createElement('option');
+            opt.value = v;
+            opt.textContent = v + (v === 1 ? ' vidéo' : ' vidéos');
+            select.appendChild(opt);
+        });
+
+        // Tente de conserver la valeur actuelle ou revient au minimum si besoin
+        let newValue = current;
+        if (!options.includes(current)) {
+            newValue = options[0];
+        } else if (engagement !== 'none' && current < 3) {
+            newValue = 3;
+        }
+        
+        select.value = newValue;
+    }
+
+    // --- FONCTION DE TÉLÉCHARGEMENT DU RÉCAPITULATIF (Conservée au cas où) ---
+
+    function generateRecapString(totalTTC, totalHT, unitAfterDiscountTTC, prestationsTotalTTC, adsAmountTTC, urgentAmountTTC) {
+        const pack      = getSelectedPack();
+        const dureeKey    = document.getElementById('select-duree').value;
+        const engagement  = document.getElementById('select-engagement').value;
+        const useAds      = document.getElementById('option-ads').checked;
+        const urgent      = document.getElementById('option-urgent').checked;
+        const volume = Number(document.getElementById('select-volume').value);
+        const months = getEngagementDuration(engagement);
+        
+        // Libellés
+        const packLabel = pack.toUpperCase();
+        const dureeLabel = getDureeLabel(dureeKey);
+        const engagementLabel = 
+            engagement === '6mois' ? 'Engagement 6 mois' :
+            engagement === '12mois' ? 'Engagement 12 mois' :
+            'Sans engagement';
+        
+        // Formatage des prix
+        const formattedTTC = formatCurrency(totalTTC);
+        const formattedUnit = formatCurrency(unitAfterDiscountTTC);
+        const formattedPrestations = formatCurrency(prestationsTotalTTC);
+        const formattedAds = formatCurrency(adsAmountTTC);
+        const formattedUrgent = formatCurrency(urgentAmountTTC);
+
+        let recapText = `--- RÉCAPITULATIF SIMULATEUR MONTAGE VIDÉO ---\n`;
+        recapText += `\n🎯 VOTRE CONFIGURATION\n`;
+        recapText += `--------------------------------------------\n`;
+        recapText += `* Forfait : ${packLabel}\n`;
+        recapText += `* Durée : ${dureeLabel}\n`;
+        recapText += `* Volume : ${volume} vidéo(s) ${months > 0 ? 'par mois' : 'ponctuelles'}\n`;
+        recapText += `* Engagement : ${engagementLabel}\n`;
+        
+        // Options
+        let optionsList = [];
+        if (useAds) optionsList.push("Cession publicitaire (+20 %)");
+        if (urgent) optionsList.push("Urgence (+30 %)");
+        if (optionsList.length > 0) {
+            recapText += `* Options appliquées : ${optionsList.join(' | ')}\n`;
+        } else {
+            recapText += `* Options appliquées : Aucune\n`;
+        }
+
+        // Prix
+        recapText += `\n💰 DÉTAIL DES COÛTS (TTC)\n`;
+        recapText += `--------------------------------------------\n`;
+        recapText += `* Prix unitaire moyen (avec remises) : ${formattedUnit} €\n`;
+        recapText += `* Total Prestations : ${formattedPrestations} €\n`;
+        if (adsAmountTTC > 0) recapText += `* Total Cession Ads : ${formattedAds} €\n`;
+        if (urgentAmountTTC > 0) recapText += `* Total Urgence : ${formattedUrgent} €\n`;
+        
+        recapText += `\n============================================\n`;
+        recapText += `✨ PRIX TOTAL MENSUEL (TTC) : ${formattedTTC} €\n`;
+        recapText += `============================================\n`;
+        
+        if (months > 0) {
+            const totalOnPeriodTTC = totalTTC * months;
+            recapText += `\n🗓️ COÛT TOTAL sur l'engagement (${months} mois) : ${formatCurrency(totalOnPeriodTTC)} € TTC.\n`;
+        }
+        recapText += `\n(TVA de 20% incluse. Tarifs indicatifs hors heures supplémentaires ou complexité exceptionnelle.)\n`;
+
+        return recapText;
+    }
+
+    // La fonction downloadRecap est conservée mais le formulaire Netlify est la méthode préférée.
+    function downloadRecap() {
+        if (!lastRecapText || lastRecapText.includes("Ce format nécessite un devis personnalisé")) {
+            alert("Veuillez d'abord sélectionner vos options pour générer le récapitulatif.");
+            return;
+        }
+
+        // Création d'un Blob (bloc binaire de données) à partir de la chaîne de texte
+        const blob = new Blob([lastRecapText], { type: 'text/plain' });
+        
+        // Création d'un lien temporaire
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        
+        // Définition du nom du fichier
+        a.download = `Recap_Devis_Fi_${new Date().toISOString().slice(0, 10)}.txt`;
+        
+        // Simuler le clic pour déclencher le téléchargement
+        document.body.appendChild(a);
+        a.click();
+        
+        // Nettoyage
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+    }
+
+
+    // --- FONCTION PRINCIPALE DE MISE À JOUR ---
+
+    function updateRecap() {
+        const pack      = getSelectedPack();
+        const dureeKey    = document.getElementById('select-duree').value;
+        const engagement  = document.getElementById('select-engagement').value;
+        const useAds      = document.getElementById('option-ads').checked;
+        const urgent      = document.getElementById('option-urgent').checked;
+
+        refreshVolumeOptions();
+        const volume = Number(document.getElementById('select-volume').value);
+
+        const packLabel =
+            pack === 'simple'  ? 'Forfait SIMPLE' :
+            pack === 'standard' ? 'Forfait STANDARD' :
+                                 'Forfait PREMIUM';
+
+        const dureeLabel = getDureeLabel(dureeKey);
+        const engagementLabel =
+            engagement === '6mois' ? 'engagement 6 mois' :
+            engagement === '12mois' ? 'engagement 12 mois' :
+            'sans engagement';
+
+        let baseUnitHT = priceTableHT[pack][dureeKey];
+
+        // --- GESTION DU CSS DES BOUTONS DE FORFAIT ---
+        document.querySelectorAll('button[data-pack]').forEach(button => {
+            const isSelected = button.getAttribute('data-pack') === pack;
+            button.setAttribute('data-selected', isSelected);
+            
+            // Gestion des classes pour le style de la bordure sélectionnée
+            button.classList.remove('border-sky-500/40', 'border-emerald-500/40', 'border-violet-500/40', 'border-slate-700/60');
+
+            if (isSelected) {
+                if (pack === 'simple') button.classList.add('border-sky-500/40');
+                if (pack === 'standard') button.classList.add('border-emerald-500/40');
+                if (pack === 'premium') button.classList.add('border-violet-500/40');
+            } else {
+                button.classList.add('border-slate-700/60');
+            }
+        });
+
+        // Délais
+        const baseDelayDays = delayTable[dureeKey] || 5;
+        const rushDelayDays = Math.max(1, Math.round(baseDelayDays / 2));
+        const delaiTexte = urgent
+            ? `Délai indicatif : ${rushDelayDays} jour(s) ouvré(s) (urgence, ≈ moitié du délai standard de ${baseDelayDays} jours).`
+            : `Délai indicatif : ${baseDelayDays} jour(s) ouvré(s) (standard).`;
+        document.getElementById('recap-delai').textContent = delaiTexte;
+
+        // Cas sur devis (Premium XL)
+        if (baseUnitHT === null) {
+            document.getElementById('recap-description').textContent =
+                `${packLabel} • ${dureeLabel} • ${volume} vidéo(s) • ${engagementLabel}.`;
+            document.getElementById('recap-title').textContent = 'Estimation totale (sur devis)';
+            document.getElementById('recap-total').textContent = 'Sur devis';
+            document.getElementById('recap-breakdown').textContent =
+                'Ce format nécessite un devis personnalisé (durée, complexité, heures supplémentaires).';
+            document.getElementById('recap-unit').textContent = 'Prix unitaire : sur devis.';
+            document.getElementById('recap-remises').textContent =
+                'Remise volume : 0 % • Remise engagement : 0 % (à définir au cas par cas).';
+            document.getElementById('recap-total-engagement').style.display = 'none';
+            lastRecapText = "Ce format nécessite un devis personnalisé. Veuillez me contacter pour une estimation précise."; // Stockage du message
+             // Mettre à jour les champs cachés du formulaire Netlify avec le message d'erreur
+            if (document.getElementById('form-pack-input')) {
+                document.getElementById('form-pack-input').value = 'DEVIS';
+                document.getElementById('form-price-input').value = 'Sur devis';
+                document.getElementById('form-recap-input').value = lastRecapText;
+            }
+            return;
+        }
+
+        // 1. Remises
+        let volumeRate     = calcVolumeDiscount(volume);
+        let engagementRate = calcEngagementDiscount(engagement);
+
+        if (engagement !== 'none') volumeRate = 0; 
+        
+        const totalDiscount = volumeRate + engagementRate;
+
+        // 2. Prix unitaire après remise (HT)
+        const unitAfterDiscountHT = baseUnitHT * (1 - totalDiscount);
+
+        // 3. Total Prestations (HT)
+        let prestationsTotalHT = unitAfterDiscountHT * volume;
+
+        // --- 4. OPTIONS ---
+        let adsAmountHT = useAds ? prestationsTotalHT * CESSION_ADS_RATE : 0;
+        let urgentAmountHT = urgent ? prestationsTotalHT * 0.30 : 0;
+
+        // 5. Totaux HT et TTC
+        const totalHT = prestationsTotalHT + adsAmountHT + urgentAmountHT;
+        const totalTTC = totalHT * TVA_RATE; 
+
+        // Calculs des TTC détaillés pour le récap
+        const unitAfterDiscountTTC = unitAfterDiscountHT * TVA_RATE;
+        const prestationsTotalTTC = prestationsTotalHT * TVA_RATE;
+        const adsAmountTTC = adsAmountHT * TVA_RATE;
+        const urgentAmountTTC = urgentAmountHT * TVA_RATE;
+
+
+        // --- AFFICHAGE ---
+
+        const months = getEngagementDuration(engagement);
+        let titleText = 'Estimation totale (sans engagement)';
+        if (months > 0) {
+            titleText = `Estimation mensuelle TTC (engagement ${months} mois)`;
+            const totalOnPeriod = totalTTC * months;
+            const txt =
+                `Estimation sur toute la durée de l’engagement (${months} mois, ` +
+                `${volume} vidéo(s)/mois) : ` +
+                `${formatCurrency(totalOnPeriod)} € TTC.`;
+            document.getElementById('recap-total-engagement').style.display = 'block';
+            document.getElementById('recap-total-engagement').textContent = txt;
+        } else {
+            document.getElementById('recap-total-engagement').style.display = 'none';
+        }
+
+        document.getElementById('recap-title').textContent = titleText;
+        document.getElementById('recap-description').textContent =
+            `${packLabel} • ${dureeLabel} • ${volume} vidéo(s)${months>0 ? ' par mois' : ''} • ${engagementLabel}.`;
+
+        document.getElementById('recap-total').textContent =
+            formatCurrency(totalTTC) + ' € TTC';
+
+        document.getElementById('recap-breakdown').textContent =
+            `Prestations : ${formatCurrency(prestationsTotalTTC)} € • ` +
+            `Cession ads : ${formatCurrency(adsAmountTTC)} € • ` +
+            `Urgence : ${formatCurrency(urgentAmountTTC)} € TTC.`;
+
+        document.getElementById('recap-unit').textContent =
+            `Base : ${formatCurrency(baseUnitHT)} € HT / ${formatCurrency(baseUnitHT * TVA_RATE)} € TTC par vidéo. Prix unitaire moyen (hors options, avec remises) : ` +
+            formatCurrency(unitAfterDiscountTTC) + ' € TTC.';
+
+        document.getElementById('recap-remises').textContent =
+            `Remise volume : ${volumeRate * 100} % • Remise engagement : ${engagementRate * 100} %.`;
+
+        // --- GESTION DU RÉCAPITULATIF POUR NETLIFY ---
+        // 1. Stockage du récapitulatif détaillé pour le formulaire
+        lastRecapText = generateRecapString(totalTTC, totalHT, unitAfterDiscountTTC, prestationsTotalTTC, adsAmountTTC, urgentAmountTTC);
+
+        // 2. Mise à jour des champs cachés du formulaire Netlify
+        if (document.getElementById('form-pack-input')) {
+            document.getElementById('form-pack-input').value = packLabel.replace('Forfait ', '');
+            document.getElementById('form-price-input').value = formatCurrency(totalTTC) + ' € TTC';
+            // On remplace les retours à la ligne par '|' pour une meilleure lisibilité dans les emails Netlify
+            document.getElementById('form-recap-input').value = lastRecapText.replace(/\n/g, ' | '); 
+        }
+    } // <-- FERMETURE DE LA FONCTION updateRecap
+
+    // --- FONCTION UTILITAIRE pour le clic sur les boutons de forfait ---
+    function selectPack(packName) {
+        document.getElementById(`radio-${packName}`).checked = true;
+        updateRecap(); // Appel de la mise à jour après la sélection
+    }
+
+    // --- ÉCOUTEURS D'ÉVÉNEMENTS (Initialisation) ---
+    // Cette partie est essentielle pour que le simulateur fonctionne !
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // 1. Initialisation de l'affichage et des valeurs du formulaire (appel initial)
+        updateRecap(); 
+
+        // 2. Écouteurs pour les sélecteurs et checkboxes
+        const selectors = [
+            'select-duree', 
+            'select-volume', 
+            'select-engagement', 
+            'option-ads', 
+            'option-urgent'
+        ];
+
+        selectors.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('change', updateRecap);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
